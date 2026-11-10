@@ -96,14 +96,14 @@ st.markdown("""
     /* Keyframe Animations */
     @keyframes float {
         0% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-7px) rotate(1deg); }
+        50% { transform: translateY(-8px) rotate(1.5deg); }
         100% { transform: translateY(0px) rotate(0deg); }
     }
     
     @keyframes pulse-glow {
-        0% { box-shadow: 0 0 15px rgba(46, 125, 50, 0.2); }
-        50% { box-shadow: 0 0 30px rgba(46, 125, 50, 0.45); }
-        100% { box-shadow: 0 0 15px rgba(46, 125, 50, 0.2); }
+        0% { filter: drop-shadow(0 0 10px rgba(46, 125, 50, 0.25)); }
+        50% { filter: drop-shadow(0 0 25px rgba(46, 125, 50, 0.5)); }
+        100% { filter: drop-shadow(0 0 10px rgba(46, 125, 50, 0.25)); }
     }
 
     @keyframes pulse-badge {
@@ -112,23 +112,17 @@ st.markdown("""
         100% { transform: scale(1); }
     }
 
-    /* Hero Section with Realistic Farmer & Tomato Photo */
+    /* Hero Section */
     .hero-container {
         text-align: center;
         padding: 10px 0 20px 0;
     }
-    .farmer-hero-img {
-        width: 220px;
-        height: 220px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 4px solid #ffffff;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-        animation: float 5s ease-in-out infinite, pulse-glow 4s ease-in-out infinite;
+    .farmer-svg {
+        animation: float 4.5s ease-in-out infinite, pulse-glow 3.5s ease-in-out infinite;
         transition: transform 0.4s ease;
     }
-    .farmer-hero-img:hover {
-        transform: scale(1.06) rotate(-2deg);
+    .farmer-svg:hover {
+        transform: scale(1.08) rotate(-2deg);
     }
 
     /* Headings */
@@ -148,7 +142,7 @@ st.markdown("""
         font-weight: 500;
     }
 
-    /* Interactive Cards with Enhanced Pop-Up & Tilt Effects */
+    /* Result Cards */
     .card-container {
         border-radius: 16px;
         padding: 24px;
@@ -198,7 +192,7 @@ st.markdown("""
         animation: pulse-badge 2.5s infinite ease-in-out;
     }
 
-    /* Animated Treatment Card */
+    /* Treatment Guide Card */
     .treatment-card {
         background: #ffffff;
         border-radius: 16px;
@@ -217,16 +211,6 @@ st.markdown("""
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 10px;
-    }
-
-    /* Uploader Hover Animation & Image Zoom */
-    div[data-testid="stFileUploader"] {
-        border-radius: 16px;
-        transition: all 0.35s ease;
-    }
-    div[data-testid="stFileUploader"]:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(46, 125, 50, 0.15);
     }
 
     /* Image Preview Zoom Effect */
@@ -257,12 +241,22 @@ def load_model_and_labels():
 
 model, class_indices = load_model_and_labels()
 
-# Sidebar Navigation & Information
+# Sidebar Navigation
 with st.sidebar:
     st.markdown("""
         <div style="text-align: center;">
-            <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300&auto=format&fit=crop&q=80" 
-                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #2e7d32; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+            <svg width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#E8F5E9" stroke="#2E7D32" stroke-width="4"/>
+                <path d="M40 90 Q100 70 160 90 Q170 95 160 100 Q100 115 40 100 Z" fill="#E5A93C"/>
+                <path d="M65 90 Q70 45 100 45 Q130 45 135 90 Z" fill="#F3BF55"/>
+                <ellipse cx="100" cy="115" rx="28" ry="24" fill="#FFCC80"/>
+                <circle cx="90" cy="112" r="3" fill="#333"/>
+                <circle cx="110" cy="112" r="3" fill="#333"/>
+                <path d="M92 124 Q100 132 108 124" stroke="#333" stroke-width="2.5" fill="none"/>
+                <path d="M60 170 Q100 145 140 170 L150 200 L50 200 Z" fill="#1565C0"/>
+                <circle cx="132" cy="142" r="18" fill="#E53935"/>
+                <path d="M132 124 L128 118 M132 124 L136 118" stroke="#4CAF50" stroke-width="3"/>
+            </svg>
             <h2 style="margin-top:10px; color:#1b5e20;">Tomato Doctor AI</h2>
         </div>
     """, unsafe_allow_html=True)
@@ -276,13 +270,32 @@ with st.sidebar:
     st.markdown("---")
     st.caption("MobileNetV2 Neural Network")
 
-# Hero Section with Realistic High-Res Farmer Photo & Animated Glow
+# Hero Section with Vector SVG Farmer Wearing Straw Hat Holding Tomato
 st.markdown("""
     <div class="hero-container">
-        <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80" 
-             class="farmer-hero-img" alt="Farmer holding fresh tomatoes">
+        <svg width="180" height="180" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="farmer-svg">
+            <circle cx="100" cy="100" r="90" fill="url(#bg-grad)" stroke="#2E7D32" stroke-width="4"/>
+            <path d="M35 95 Q100 72 165 95 Q175 100 165 105 Q100 120 35 105 Q25 100 35 95 Z" fill="#E5A93C" stroke="#B37B14" stroke-width="2"/>
+            <path d="M62 93 Q68 45 100 45 Q132 45 138 93 Z" fill="#F3BF55" stroke="#B37B14" stroke-width="2"/>
+            <path d="M62 88 Q100 80 138 88 Q137 94 137 94 Q100 85 63 94 Z" fill="#C62828"/>
+            <ellipse cx="100" cy="118" rx="28" ry="24" fill="#FFCC80"/>
+            <circle cx="89" cy="114" r="3.5" fill="#212121"/>
+            <circle cx="111" cy="114" r="3.5" fill="#212121"/>
+            <path d="M91 126 Q100 135 109 126" stroke="#212121" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M55 172 Q100 148 145 172 L155 200 L45 200 Z" fill="#1565C0"/>
+            <path d="M80 160 L80 200 M120 160 L120 200" stroke="#FFD54F" stroke-width="4"/>
+            <circle cx="136" cy="144" r="19" fill="#E53935" stroke="#B71C1C" stroke-width="2"/>
+            <path d="M136 125 L131 118 M136 125 L141 118 M136 125 L136 116" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M118 148 Q124 158 132 155" stroke="#FFCC80" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+            <defs>
+                <linearGradient id="bg-grad" x1="0" y1="0" x2="200" y2="200">
+                    <stop offset="0%" stop-color="#E8F5E9"/>
+                    <stop offset="100%" stop-color="#C8E6C9"/>
+                </linearGradient>
+            </defs>
+        </svg>
         <div class="main-title">Tomato Doctor AI</div>
-        <div class="sub-title">Upload a leaf sample below for immediate AI-powered pathology analysis</div>
+        <div class="sub-title">Provide a leaf sample below using your camera or file upload for instant AI analysis</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -290,13 +303,24 @@ st.markdown("""
 if model is None:
     st.error("⚠️ Model files not detected! Please ensure `model/tomato_model.h5` and `model/class_indices.json` exist in your repository.")
 else:
-    uploaded_file = st.file_uploader("Choose a tomato leaf image (JPG, JPEG, PNG)...", type=["jpg", "jpeg", "png"])
+    # 5. Dual Input Option: File Upload vs Camera Capture
+    input_type = st.radio(
+        "Choose Image Input Method:",
+        ["📁 Upload Image File", "📷 Take Photo with Camera"],
+        horizontal=True
+    )
+
+    uploaded_file = None
+    if input_type == "📁 Upload Image File":
+        uploaded_file = st.file_uploader("Choose a tomato leaf image (JPG, JPEG, PNG)...", type=["jpg", "jpeg", "png"])
+    else:
+        uploaded_file = st.camera_input("Click photo of the tomato leaf")
 
     if uploaded_file is not None:
         col1, col2 = st.columns(2, gap="large")
         
         with col1:
-            st.markdown("##### 📷 Uploaded Leaf Sample")
+            st.markdown("##### 📷 Leaf Sample")
             img_display = Image.open(uploaded_file)
             st.image(img_display, use_column_width=True)
             
@@ -317,7 +341,7 @@ else:
                 disease_name = disease_key.replace("_", " ")
                 is_healthy = "healthy" in raw_label.lower()
 
-            # Unified Status Header + Confidence Below
+            # Result Header + Confidence Score
             if is_healthy:
                 st.markdown(f"""
                     <div class="card-container card-healthy">
