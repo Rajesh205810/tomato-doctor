@@ -119,40 +119,40 @@ st.markdown(f"""
         100% {{ transform: translateX(0); opacity: 1; }}
     }}
 
-    /* Keyframe Floating Animation for Hero Image */
+    /* Keyframe Floating Animation for Small Logo */
     @keyframes float {{
         0% {{ transform: translateY(0px) rotate(0deg); }}
-        50% {{ transform: translateY(-7px) rotate(1deg); }}
+        50% {{ transform: translateY(-5px) rotate(1deg); }}
         100% {{ transform: translateY(0px) rotate(0deg); }}
     }}
 
-    /* Hero Section Styling */
+    /* Hero Section & Compact Logo Styling */
     .hero-container {{
         text-align: center;
-        padding: 10px 0 20px 0;
+        padding: 5px 0 15px 0;
     }}
     .farmer-hero-img {{
-        max-width: 220px;
+        max-width: 85px;
         height: auto;
-        border-radius: 18px;
+        border-radius: 50%;
         animation: float 4.5s ease-in-out infinite;
-        transition: transform 0.4s ease, filter 0.4s ease;
-        filter: drop-shadow(0 12px 24px rgba(46, 125, 50, 0.2));
+        transition: transform 0.3s ease, filter 0.3s ease;
+        filter: drop-shadow(0 6px 14px rgba(46, 125, 50, 0.25));
     }}
     .farmer-hero-img:hover {{
-        transform: scale(1.05) rotate(-2deg);
-        filter: drop-shadow(0 16px 32px rgba(46, 125, 50, 0.35));
+        transform: scale(1.1) rotate(-3deg);
+        filter: drop-shadow(0 10px 20px rgba(46, 125, 50, 0.4));
     }}
 
     /* Title Formatting */
     .main-title {{
-        font-size: 2.6rem;
+        font-size: 2.3rem;
         font-weight: 800;
         background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-top: 14px;
-        margin-bottom: 4px;
+        margin-top: 8px;
+        margin-bottom: 2px;
         letter-spacing: -0.5px;
     }}
     .sub-title {{
@@ -274,8 +274,8 @@ with st.sidebar:
     if tomato_b64:
         st.markdown(f'''
             <div style="text-align: center;">
-                <img src="{tomato_b64}" width="85" style="border-radius: 50%; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">
-                <h2 style="margin-top:10px; color:#1b5e20;">Tomato Doctor AI</h2>
+                <img src="{tomato_b64}" width="70" style="border-radius: 50%; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">
+                <h2 style="margin-top:8px; color:#1b5e20;">Tomato Doctor AI</h2>
             </div>
         ''', unsafe_allow_html=True)
     else:
@@ -295,7 +295,7 @@ with st.sidebar:
 # Hero Section
 st.markdown('<div class="hero-container">', unsafe_allow_html=True)
 if farmer_b64:
-    st.markdown(f'<img src="{farmer_b64}" class="farmer-hero-img" alt="Farmer holding harvest basket">', unsafe_allow_html=True)
+    st.markdown(f'<img src="{farmer_b64}" class="farmer-hero-img" alt="Farmer Logo">', unsafe_allow_html=True)
 else:
     st.markdown('🍅', unsafe_allow_html=True)
 
