@@ -4,6 +4,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 import json
 import os
+import base64
 from PIL import Image
 
 # 1. Page Configuration
@@ -13,6 +14,19 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded"
 )
+
+# Base64 Image Loader for Local Assets
+def get_image_base64(file_path):
+    if os.path.exists(file_path):
+        ext = file_path.split('.')[-1].lower()
+        mime_type = "image/png" if ext == "png" else "image/jpeg"
+        with open(file_path, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode()
+            return f"data:{mime_type};base64,{encoded}"
+    return None
+
+farmer_b64 = get_image_base64("farmer.png")
+tomato_b64 = get_image_base64("tomato.jpg")
 
 # 2. Disease Treatment & Care Knowledge Base
 TREATMENT_GUIDES = {
@@ -83,50 +97,55 @@ TREATMENT_GUIDES = {
 }
 
 # 3. Custom CSS & Visual Animations
-st.markdown("""
+st.markdown(f"""
     <style>
     /* Hide Default Streamlit Chrome */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-    .stDeployButton {display: none !important;}
-    div[data-testid="stDecoration"] {display: none !important;}
-    div[data-testid="stToolbar"] {display: none !important;}
+    #MainMenu {{visibility: hidden;}}
+    header {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    .stDeployButton {{display: none !important;}}
+    div[data-testid="stDecoration"] {{display: none !important;}}
+    div[data-testid="stToolbar"] {{display: none !important;}}
 
-    /* Keyframe Animations */
-    @keyframes float {
-        0% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-8px) rotate(1.5deg); }
-        100% { transform: translateY(0px) rotate(0deg); }
-    }
-    
-    @keyframes pulse-glow {
-        0% { filter: drop-shadow(0 0 10px rgba(46, 125, 50, 0.25)); }
-        50% { filter: drop-shadow(0 0 25px rgba(46, 125, 50, 0.5)); }
-        100% { filter: drop-shadow(0 0 10px rgba(46, 125, 50, 0.25)); }
-    }
+    /* Sliding Animation for Sidebar Content */
+    section[data-testid="stSidebar"] {{
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }}
+    .sidebar-animated-content {{
+        animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+    @keyframes slideInLeft {{
+        0% {{ transform: translateX(-40px); opacity: 0; }}
+        100% {{ transform: translateX(0); opacity: 1; }}
+    }}
 
-    @keyframes pulse-badge {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
+    /* Keyframe Floating Animation for Hero Image */
+    @keyframes float {{
+        0% {{ transform: translateY(0px) rotate(0deg); }}
+        50% {{ transform: translateY(-7px) rotate(1deg); }}
+        100% {{ transform: translateY(0px) rotate(0deg); }}
+    }}
 
-    /* Hero Section */
-    .hero-container {
+    /* Hero Section Styling */
+    .hero-container {{
         text-align: center;
         padding: 10px 0 20px 0;
-    }
-    .farmer-svg {
-        animation: float 4.5s ease-in-out infinite, pulse-glow 3.5s ease-in-out infinite;
-        transition: transform 0.4s ease;
-    }
-    .farmer-svg:hover {
-        transform: scale(1.08) rotate(-2deg);
-    }
+    }}
+    .farmer-hero-img {{
+        max-width: 220px;
+        height: auto;
+        border-radius: 18px;
+        animation: float 4.5s ease-in-out infinite;
+        transition: transform 0.4s ease, filter 0.4s ease;
+        filter: drop-shadow(0 12px 24px rgba(46, 125, 50, 0.2));
+    }}
+    .farmer-hero-img:hover {{
+        transform: scale(1.05) rotate(-2deg);
+        filter: drop-shadow(0 16px 32px rgba(46, 125, 50, 0.35));
+    }}
 
-    /* Headings */
-    .main-title {
+    /* Title Formatting */
+    .main-title {{
         font-size: 2.6rem;
         font-weight: 800;
         background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
@@ -135,52 +154,61 @@ st.markdown("""
         margin-top: 14px;
         margin-bottom: 4px;
         letter-spacing: -0.5px;
-    }
-    .sub-title {
+    }}
+    .sub-title {{
         color: #555555;
         font-size: 1.05rem;
         font-weight: 500;
-    }
+    }}
 
-    /* Result Cards */
-    .card-container {
+    /* Side-by-Side Modern Tabs */
+    button[data-baseweb="tab"] {{
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        padding: 12px 24px !important;
+        border-radius: 12px 12px 0 0 !important;
+        transition: all 0.3s ease !important;
+    }}
+
+    /* Diagnostic Card Pop-Up Hover Effects */
+    .card-container {{
         border-radius: 16px;
         padding: 24px;
         margin-top: 15px;
         transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         border: 1px solid rgba(0, 0, 0, 0.06);
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-    }
-    .card-container:hover {
+    }}
+    .card-container:hover {{
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
-    }
+    }}
 
-    .card-healthy {
+    .card-healthy {{
         background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
         border-left: 8px solid #2e7d32;
-    }
-    .card-infected {
+    }}
+    .card-infected {{
         background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%);
         border-left: 8px solid #d32f2f;
-    }
+    }}
 
-    .result-header {
+    .result-header {{
         font-size: 1.35rem;
         font-weight: 800;
         margin-bottom: 6px;
         line-height: 1.3;
-    }
-    .healthy-text { color: #1b5e20; }
-    .infected-text { color: #b71c1c; }
+    }}
+    .healthy-text {{ color: #1b5e20; }}
+    .infected-text {{ color: #b71c1c; }}
 
-    .confidence-container {
+    .confidence-container {{
         font-size: 1.05rem;
         font-weight: 600;
         color: #333333;
         margin-top: 6px;
-    }
-    .confidence-badge {
+    }}
+    .confidence-badge {{
         display: inline-block;
         background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
         color: white;
@@ -189,11 +217,10 @@ st.markdown("""
         font-size: 0.85rem;
         font-weight: 700;
         margin-left: 8px;
-        animation: pulse-badge 2.5s infinite ease-in-out;
-    }
+    }}
 
-    /* Treatment Guide Card */
-    .treatment-card {
+    /* Care & Treatment Guide Card */
+    .treatment-card {{
         background: #ffffff;
         border-radius: 16px;
         padding: 22px 26px;
@@ -201,31 +228,31 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .treatment-card:hover {
+    }}
+    .treatment-card:hover {{
         transform: translateY(-5px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    }
-    .treatment-title {
+    }}
+    .treatment-title {{
         font-size: 1.15rem;
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 10px;
-    }
+    }}
 
-    /* Image Preview Zoom Effect */
-    div[data-testid="stImage"] img {
+    /* Preview Image Zoom Effect */
+    div[data-testid="stImage"] img {{
         border-radius: 12px;
         transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
-    div[data-testid="stImage"] img:hover {
+    }}
+    div[data-testid="stImage"] img:hover {{
         transform: scale(1.03);
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
+    }}
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Load Neural Network & Class Maps
+# 4. Load Neural Network & Class Mapping
 @st.cache_resource
 def load_model_and_labels():
     model_path = "model/tomato_model.h5"
@@ -241,25 +268,19 @@ def load_model_and_labels():
 
 model, class_indices = load_model_and_labels()
 
-# Sidebar Navigation
+# Sidebar Navigation with Sliding Content Animation
 with st.sidebar:
-    st.markdown("""
-        <div style="text-align: center;">
-            <svg width="80" height="80" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="100" cy="100" r="90" fill="#E8F5E9" stroke="#2E7D32" stroke-width="4"/>
-                <path d="M40 90 Q100 70 160 90 Q170 95 160 100 Q100 115 40 100 Z" fill="#E5A93C"/>
-                <path d="M65 90 Q70 45 100 45 Q130 45 135 90 Z" fill="#F3BF55"/>
-                <ellipse cx="100" cy="115" rx="28" ry="24" fill="#FFCC80"/>
-                <circle cx="90" cy="112" r="3" fill="#333"/>
-                <circle cx="110" cy="112" r="3" fill="#333"/>
-                <path d="M92 124 Q100 132 108 124" stroke="#333" stroke-width="2.5" fill="none"/>
-                <path d="M60 170 Q100 145 140 170 L150 200 L50 200 Z" fill="#1565C0"/>
-                <circle cx="132" cy="142" r="18" fill="#E53935"/>
-                <path d="M132 124 L128 118 M132 124 L136 118" stroke="#4CAF50" stroke-width="3"/>
-            </svg>
-            <h2 style="margin-top:10px; color:#1b5e20;">Tomato Doctor AI</h2>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-animated-content">', unsafe_allow_html=True)
+    if tomato_b64:
+        st.markdown(f'''
+            <div style="text-align: center;">
+                <img src="{tomato_b64}" width="85" style="border-radius: 50%; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">
+                <h2 style="margin-top:10px; color:#1b5e20;">Tomato Doctor AI</h2>
+            </div>
+        ''', unsafe_allow_html=True)
+    else:
+        st.markdown('<h2 style="text-align:center; color:#1b5e20;">🍅 Tomato Doctor AI</h2>', unsafe_allow_html=True)
+        
     st.markdown("Automated deep learning platform for real-time tomato leaf disease diagnosis.")
     st.markdown("---")
     st.markdown("### Supported Categories:")
@@ -269,33 +290,18 @@ with st.sidebar:
             st.markdown(f"- **{clean_name}**")
     st.markdown("---")
     st.caption("MobileNetV2 Neural Network")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Hero Section with Vector SVG Farmer Wearing Straw Hat Holding Tomato
+# Hero Section
+st.markdown('<div class="hero-container">', unsafe_allow_html=True)
+if farmer_b64:
+    st.markdown(f'<img src="{farmer_b64}" class="farmer-hero-img" alt="Farmer holding harvest basket">', unsafe_allow_html=True)
+else:
+    st.markdown('🍅', unsafe_allow_html=True)
+
 st.markdown("""
-    <div class="hero-container">
-        <svg width="180" height="180" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="farmer-svg">
-            <circle cx="100" cy="100" r="90" fill="url(#bg-grad)" stroke="#2E7D32" stroke-width="4"/>
-            <path d="M35 95 Q100 72 165 95 Q175 100 165 105 Q100 120 35 105 Q25 100 35 95 Z" fill="#E5A93C" stroke="#B37B14" stroke-width="2"/>
-            <path d="M62 93 Q68 45 100 45 Q132 45 138 93 Z" fill="#F3BF55" stroke="#B37B14" stroke-width="2"/>
-            <path d="M62 88 Q100 80 138 88 Q137 94 137 94 Q100 85 63 94 Z" fill="#C62828"/>
-            <ellipse cx="100" cy="118" rx="28" ry="24" fill="#FFCC80"/>
-            <circle cx="89" cy="114" r="3.5" fill="#212121"/>
-            <circle cx="111" cy="114" r="3.5" fill="#212121"/>
-            <path d="M91 126 Q100 135 109 126" stroke="#212121" stroke-width="3" stroke-linecap="round" fill="none"/>
-            <path d="M55 172 Q100 148 145 172 L155 200 L45 200 Z" fill="#1565C0"/>
-            <path d="M80 160 L80 200 M120 160 L120 200" stroke="#FFD54F" stroke-width="4"/>
-            <circle cx="136" cy="144" r="19" fill="#E53935" stroke="#B71C1C" stroke-width="2"/>
-            <path d="M136 125 L131 118 M136 125 L141 118 M136 125 L136 116" stroke="#4CAF50" stroke-width="3.5" stroke-linecap="round"/>
-            <path d="M118 148 Q124 158 132 155" stroke="#FFCC80" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-            <defs>
-                <linearGradient id="bg-grad" x1="0" y1="0" x2="200" y2="200">
-                    <stop offset="0%" stop-color="#E8F5E9"/>
-                    <stop offset="100%" stop-color="#C8E6C9"/>
-                </linearGradient>
-            </defs>
-        </svg>
         <div class="main-title">Tomato Doctor AI</div>
-        <div class="sub-title">Provide a leaf sample below using your camera or file upload for instant AI analysis</div>
+        <div class="sub-title">Provide a leaf sample below using your file manager or camera for instant AI analysis</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -303,18 +309,19 @@ st.markdown("""
 if model is None:
     st.error("⚠️ Model files not detected! Please ensure `model/tomato_model.h5` and `model/class_indices.json` exist in your repository.")
 else:
-    # 5. Dual Input Option: File Upload vs Camera Capture
-    input_type = st.radio(
-        "Choose Image Input Method:",
-        ["📁 Upload Image File", "📷 Take Photo with Camera"],
-        horizontal=True
-    )
+    # 5. Side-by-Side Input Tabs for Upload & Camera
+    tab1, tab2 = st.tabs(["📁 Upload Image File", "📷 Take Photo with Camera"])
 
     uploaded_file = None
-    if input_type == "📁 Upload Image File":
-        uploaded_file = st.file_uploader("Choose a tomato leaf image (JPG, JPEG, PNG)...", type=["jpg", "jpeg", "png"])
-    else:
-        uploaded_file = st.camera_input("Click photo of the tomato leaf")
+    with tab1:
+        file_input = st.file_uploader("Choose a tomato leaf image (JPG, JPEG, PNG)...", type=["jpg", "jpeg", "png"], key="uploader")
+        if file_input is not None:
+            uploaded_file = file_input
+
+    with tab2:
+        camera_input = st.camera_input("Snap a live photo of your tomato leaf", key="camera")
+        if camera_input is not None:
+            uploaded_file = camera_input
 
     if uploaded_file is not None:
         col1, col2 = st.columns(2, gap="large")
