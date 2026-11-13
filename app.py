@@ -15,6 +15,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Initialize Session State for User Account & Language
+if "app_lang" not in st.session_state:
+    st.session_state.app_lang = "English"
+if "user_email" not in st.session_state:
+    st.session_state.user_email = None
+if "user_name" not in st.session_state:
+    st.session_state.user_name = None
+if "scan_count" not in st.session_state:
+    st.session_state.scan_count = 0
+
 # Base64 Image Loader for Local Assets
 def get_image_base64(file_path):
     if os.path.exists(file_path):
@@ -53,12 +63,21 @@ TEXT = {
         "badge_healthy": "High Certainty",
         "badge_infected": "AI Flagged",
         "prob_expander": "📊 Detailed Class Probability Breakdown",
-        "ai_slider_header": "🤖 Talk with AI",
-        "ai_slider_label": "Slide to connect with a free AI assistant:",
-        "slider_off": "Off",
-        "ai_prompt_text": "Need further help? Chat directly with",
-        "ai_btn_text": "🚀 Open AI Chat",
-        "supported_header": "Supported Categories:",
+        # Sidebar Translations
+        "account_header": "👤 Gmail Account",
+        "name_placeholder": "Your Full Name",
+        "email_placeholder": "yourname@gmail.com",
+        "login_btn": "Sign in with Gmail",
+        "login_error": "Please enter a valid @gmail.com address and your name.",
+        "login_success": "Account created & signed in!",
+        "scans_label": "Leaves Scanned:",
+        "logout_btn": "Sign Out",
+        "settings_header": "⚙️ Settings",
+        "lang_label": "App Language / भाषा",
+        "ai_header": "✨ Further Research with AI",
+        "ai_desc": "Want deeper insights about plant care or crop science? Continue your research on Google Gemini.",
+        "ai_btn": "🚀 Open Google Gemini",
+        "supported_header": "🌿 Detectable Diseases",
         "model_missing": "⚠️ Model files not detected! Ensure `model/tomato_model.h5` and `model/class_indices.json` are in your repository.",
         "diseases": {
             "Bacterial_spot": "Bacterial Spot",
@@ -94,12 +113,21 @@ TEXT = {
         "badge_healthy": "उच्च निश्चितता",
         "badge_infected": "एआईद्वारा पहिचान",
         "prob_expander": "📊 विस्तृत सम्भावना विवरण",
-        "ai_slider_header": "🤖 एआई सहायकसँग कुरा गर्नुहोस्",
-        "ai_slider_label": "निःशुल्क एआईसँग जोडिन स्लाइडर सार्नुहोस्:",
-        "slider_off": "बन्द (Off)",
-        "ai_prompt_text": "थप जानकारी चाहिन्छ? सिधै कुरा गर्नुहोस्:",
-        "ai_btn_text": "🚀 एआई च्याट खोल्नुहोस्",
-        "supported_header": "पहिचान हुने रोगहरू:",
+        # Sidebar Translations
+        "account_header": "👤 जिमेल खाता (Gmail Account)",
+        "name_placeholder": "तपाईंको पूरा नाम",
+        "email_placeholder": "yourname@gmail.com",
+        "login_btn": "जिमेलबाट लगइन गर्नुहोस्",
+        "login_error": "कृपया मान्य @gmail.com ठेगाना र आफ्नो नाम लेख्नुहोस्।",
+        "login_success": "खाता सिर्जना र लगइन सफल भयो!",
+        "scans_label": "परीक्षण गरिएका पातहरू:",
+        "logout_btn": "लगआउट (Sign Out)",
+        "settings_header": "⚙️ सेटिङहरू (Settings)",
+        "lang_label": "भाषा छान्नुहोस् / Language",
+        "ai_header": "✨ एआईसँग थप अनुसन्धान",
+        "ai_desc": "बिरुवाको बारेमा थप विस्तृत जानकारी खोज्न गुगल जेमिनी (Google Gemini) प्रयोग गर्नुहोस्।",
+        "ai_btn": "🚀 गुगल जेमिनी खोल्नुहोस्",
+        "supported_header": "🌿 पहिचान हुने रोगहरू",
         "model_missing": "⚠️ मोडेल फाइलहरू भेटिएनन्! कृपया `model/tomato_model.h5` र `model/class_indices.json` जाँच गर्नुहोस्।",
         "diseases": {
             "Bacterial_spot": "ब्याक्टेरियल स्पट (Bacterial Spot)",
@@ -114,27 +142,66 @@ TEXT = {
     }
 }
 
-# 3. Custom CSS & High-Contrast Bright Styling
+# 3. Custom CSS & Sliding Sidebar Styling
 st.markdown("""
     <style>
-    /* Hide Default Streamlit Chrome */
+    /* Hide Default Streamlit Branding while KEEPING the Sidebar Toggle Button */
     #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display: none !important;}
     div[data-testid="stDecoration"] {display: none !important;}
-    div[data-testid="stToolbar"] {display: none !important;}
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+    }
 
-    /* Sliding Sidebar Animation */
+    /* Prominent Green Sidebar Open/Close Toggle Button */
+    [data-testid="collapsedControl"], button[kind="headerNoPadding"] {
+        background-color: #2e7d32 !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        margin: 8px !important;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.35) !important;
+        transition: transform 0.2s ease !important;
+    }
+    [data-testid="collapsedControl"]:hover, button[kind="headerNoPadding"]:hover {
+        transform: scale(1.08) !important;
+        background-color: #1b5e20 !important;
+    }
+
+    /* Smooth Sliding Animation for Sidebar */
     section[data-testid="stSidebar"] {
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s ease !important;
     }
     .sidebar-slide {
-        animation: slideInLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes slideInLeft {
-        0% { transform: translateX(-35px); opacity: 0; }
+        0% { transform: translateX(-30px); opacity: 0; }
         100% { transform: translateX(0); opacity: 1; }
+    }
+
+    /* User Profile Card inside Sidebar */
+    .profile-card {
+        background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+        border: 1.5px solid #81c784;
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+    }
+    .profile-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #2e7d32;
+        color: white;
+        font-weight: 800;
+        font-size: 1.2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        vertical-align: middle;
     }
 
     /* Bright Curved Rectangle Header Box */
@@ -321,57 +388,85 @@ def load_model_and_labels():
 
 model, class_indices = load_model_and_labels()
 
-# 5. Sliding Sidebar with Language Settings & Talk-with-AI Slider
+# 5. Sliding Sidebar: Gmail Account, Language Settings & Gemini AI Research
 with st.sidebar:
     st.markdown('<div class="sidebar-slide">', unsafe_allow_html=True)
-    
-    if tomato_b64:
-        st.markdown(f'''
-            <div style="text-align: center; margin-bottom: 10px;">
-                <img src="{tomato_b64}" width="68" style="border-radius: 50%; border: 2px solid #2e7d32; image-rendering: -webkit-optimize-contrast; box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
+    t = TEXT[st.session_state.app_lang]
+
+    # --- SECTION 1: GMAIL ACCOUNT LOGIN / PROFILE ---
+    st.markdown(f"### {t['account_header']}")
+    if st.session_state.user_email is None:
+        with st.form("gmail_login_form", clear_on_submit=False):
+            input_name = st.text_input("Name", placeholder=t["name_placeholder"], label_visibility="collapsed")
+            input_email = st.text_input("Gmail", placeholder=t["email_placeholder"], label_visibility="collapsed")
+            submitted = st.form_submit_button(f"🔐 {t['login_btn']}", use_container_width=True)
+            
+            if submitted:
+                clean_email = input_email.strip().lower()
+                clean_name = input_name.strip()
+                if clean_name and clean_email.endswith("@gmail.com") and len(clean_email) > 10:
+                    st.session_state.user_name = clean_name
+                    st.session_state.user_email = clean_email
+                    st.success(t["login_success"])
+                    st.rerun()
+                else:
+                    st.error(t["login_error"])
+    else:
+        initial = st.session_state.user_name[0].upper()
+        st.markdown(f"""
+            <div class="profile-card">
+                <div style="display:flex; align-items:center;">
+                    <div class="profile-avatar">{initial}</div>
+                    <div>
+                        <div style="font-weight:800; color:#1b5e20; font-size:1rem;">{st.session_state.user_name}</div>
+                        <div style="font-size:0.8rem; color:#475569;">{st.session_state.user_email}</div>
+                    </div>
+                </div>
+                <div style="margin-top:10px; font-size:0.85rem; font-weight:600; color:#2e7d32;">
+                    📊 {t['scans_label']} {st.session_state.scan_count}
+                </div>
             </div>
-        ''', unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+        if st.button(f"🚪 {t['logout_btn']}", use_container_width=True):
+            st.session_state.user_email = None
+            st.session_state.user_name = None
+            st.rerun()
 
-    if "app_lang" not in st.session_state:
-        st.session_state.app_lang = "English"
+    st.markdown("---")
 
+    # --- SECTION 2: SETTINGS (LANGUAGE SWITCHER) ---
+    st.markdown(f"### {t['settings_header']}")
     selected_lang = st.radio(
-        "🌐 Language / भाषा",
+        t["lang_label"],
         options=["English", "नेपाली"],
         index=0 if st.session_state.app_lang == "English" else 1,
         horizontal=True
     )
-    st.session_state.app_lang = selected_lang
-    t = TEXT[selected_lang]
+    if selected_lang != st.session_state.app_lang:
+        st.session_state.app_lang = selected_lang
+        st.rerun()
 
     st.markdown("---")
 
-    # Talk with AI Slider Option
-    st.markdown(f"### {t['ai_slider_header']}")
-    ai_slider = st.select_slider(
-        t["ai_slider_label"],
-        options=[t["slider_off"], "Gemini AI", "ChatGPT"],
-        value=t["slider_off"]
-    )
-
-    if ai_slider == "Gemini AI":
-        st.info(f"{t['ai_prompt_text']} **Google Gemini**")
-        st.link_button(f"{t['ai_btn_text']} (Gemini)", "https://gemini.google.com", use_container_width=True)
-    elif ai_slider == "ChatGPT":
-        st.info(f"{t['ai_prompt_text']} **ChatGPT**")
-        st.link_button(f"{t['ai_btn_text']} (ChatGPT)", "https://chatgpt.com", use_container_width=True)
+    # --- SECTION 3: FURTHER RESEARCH WITH GEMINI AI ---
+    st.markdown(f"### {t['ai_header']}")
+    st.caption(t["ai_desc"])
+    st.link_button(t["ai_btn"], "https://gemini.google.com", use_container_width=True)
 
     st.markdown("---")
 
-    # Supported Categories
-    st.markdown(f"### {t['supported_header']}")
-    if class_indices:
-        for idx, name in sorted(class_indices.items(), key=lambda x: int(x[0])):
-            raw_key = name.replace("Tomato___", "")
-            translated_name = t["diseases"].get(raw_key, raw_key.replace("_", " "))
-            st.markdown(f"- **{translated_name}**")
+    # --- SECTION 4: SUPPORTED CATEGORIES ---
+    with st.expander(t["supported_header"]):
+        if class_indices:
+            for idx, name in sorted(class_indices.items(), key=lambda x: int(x[0])):
+                raw_key = name.replace("Tomato___", "")
+                translated_name = t["diseases"].get(raw_key, raw_key.replace("_", " "))
+                st.markdown(f"- **{translated_name}**")
 
     st.markdown('</div>', unsafe_allow_html=True)
+
+# Refresh active translation dictionary
+t = TEXT[st.session_state.app_lang]
 
 # 6. Bright Curved Header Box (Sharp Circular Farmer Logo + "Plant Doctor")
 logo_html = f'<img src="{farmer_b64}" alt="Plant Doctor Logo">' if farmer_b64 else '<span style="font-size:2rem;">🌱</span>'
@@ -459,6 +554,7 @@ else:
                 disease_key = raw_label.replace("Tomato___", "")
                 disease_name = t["diseases"].get(disease_key, disease_key.replace("_", " "))
                 is_healthy = "healthy" in raw_label.lower()
+                st.session_state.scan_count += 1
 
             if is_healthy:
                 st.markdown(f"""
